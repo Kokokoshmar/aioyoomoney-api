@@ -1,0 +1,19 @@
+from os.path import join
+
+from .context_session import ContextSession
+from ..globals import API_URL
+
+
+class ContextMethod(ContextSession):
+    def __init__(self, token: str, method: str, http_method: str = "POST"):
+        self.token = token
+        self.headers = {
+            'Authorization': 'Bearer ' + self.token,
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+
+        super().__init__(
+            url=join(API_URL, method),
+            method=http_method,
+            headers=self.headers
+        )
