@@ -5,7 +5,7 @@ from ..globals import API_URL
 
 
 class ContextMethod(ContextSession):
-    def __init__(self, token: str, method: str, http_method: str = "POST"):
+    def __init__(self, token: str, method: str, http_method: str = "POST", **kwargs):
         self.token = token
         self.headers = {
             'Authorization': 'Bearer ' + self.token,
@@ -15,5 +15,11 @@ class ContextMethod(ContextSession):
         super().__init__(
             url=join(API_URL, method),
             method=http_method,
-            headers=self.headers
+            headers=self.headers,
+            **kwargs
         )
+
+    async def __aenter__(self) -> dict:
+        response = await super().__aenter__()
+
+        return await response.json()

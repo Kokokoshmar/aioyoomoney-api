@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class DigitalProduct:
+class DigitalArticle:
     merchant_article_id: str
     serial: str
     secret: str
@@ -15,6 +15,6 @@ class DigitalBonus:
 
 
 @dataclass
-class DigitalGood:
-    products: list[DigitalProduct]
+class DigitalGoods:
+    articles: list[DigitalArticle]
     bonuses: list[DigitalBonus]

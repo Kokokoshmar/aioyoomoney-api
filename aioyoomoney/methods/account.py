@@ -1,32 +1,6 @@
-from dataclasses import dataclass, field
-from enum import Enum
-
 from ..base.context_method import ContextMethod
 from ..data_classes import *
 from ..exceptions import InvalidToken
-
-
-class AccountStatus(Enum):
-    ANONYMOUS = "anonymous"
-    NAMED = "named"
-    IDENTIFIED = "identified"
-
-
-class AccountType(Enum):
-    PROFESSIONAL = "professional"
-    PERSONAL = "personal"
-
-
-@dataclass
-class Account:
-    id: str = field(default="")
-    balance: float = field(default=0.0)
-    account_type: AccountType | None = field(default=None)
-    account_status: AccountStatus | None = field(default=None)
-    balance_details: BalanceDetails | None = field(default=None)
-    cards_linked: list[Card] = field(default_factory=list)
-    currency: int = field(default=643)
-    identified: bool = field(default=False)
 
 
 class AccountMethod(ContextMethod):
@@ -34,15 +8,15 @@ class AccountMethod(ContextMethod):
         super().__init__(token, "account-info")
 
     async def __aenter__(self) -> Account:
-        response = await super().__aenter__()
-        data = await response.json()
+        data = await super().__aenter__()
 
         if len(data) == 0:
             raise InvalidToken()
 
         return self._get_account_object(data)
 
-    def _get_account_object(self, data: dict):
+    @staticmethod
+    def _get_account_object(data: dict):
         account = Account()
         account.id = data['account']
         account.balance = data['balance']

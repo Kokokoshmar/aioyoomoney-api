@@ -1,15 +1,65 @@
+from dataclasses import field, fields
 from datetime import datetime as dt
-from dataclasses import dataclass
+
+from aioyoomoney.data_classes.digital import *
+from aioyoomoney.enums.operation import *
 
 
 @dataclass
 class Operation:
-    operation_id: str | None
-    status: str | None
-    datetime: dt | None
-    title: str | None
-    pattern_id: str | None
-    direction: str | None
-    amount: float | None
-    label: str | None
-    type: str | None
+    operation_id: str | None = field(default=None)
+    status: OperationStatus | None = field(default=None)
+    datetime: dt | None = field(default=None)
+    title: str | None = field(default=None)
+    pattern_id: str | None = field(default=None)
+    direction: OperationDirection | None = field(default=None)
+    amount: float | None = field(default=None)
+    label: str | None = field(default=None)
+    type: OperationType | None = field(default=None)
+
+    @classmethod
+    def serialize_from_dict(cls, data: dict) -> "Operation":
+        operation = cls()
+
+        valid_keys = [_field.name for _field in fields(operation)]  # не нравится
+
+        for key, value in data.items():
+            if key in valid_keys:
+                operation.__setattr__(key, value)
+
+        return operation
+
+
+@dataclass
+class OperationDetails(Operation):
+    details: str | None = field(default=None)
+
+
+@dataclass
+class OperationDetailsIncomingTransfer(OperationDetails):
+    sender: str | None = field(default=None)
+
+    def __post_init__(self):
+        self.type = OperationType.INCOMING_TRANSFER
+
+
+@dataclass
+class OperationDetailsOutgoingTransfer(OperationDetails):
+    recipient: str | None = field(default=None)
+    recipient_type: RecipientType | None = field(default=None)
+    codepro: bool | None = field(default=None)
+    comment: str | None = field(default=None)
+    message: str | None = field(default=None)
+    amount_due: int | None = field(default=None)
+    fee: int | None = field(default=None)
+
+    def __post_init__(self):
+        self.type = OperationType.OUTGOING_TRANSFER
+
+
+@dataclass
+class OperationDetailsPaymentShop(OperationDetailsOutgoingTransfer):
+    digital_goods: DigitalGoods | None = field(default=None)
+
+    def __post_init__(self):
+        self.type = OperationType.PAYMENT_SHOP

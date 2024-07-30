@@ -1,7 +1,7 @@
-import requests
-
-from yarl import URL
 from urllib.parse import quote_plus
+
+import requests
+from yarl import URL
 
 from .exceptions import (
     InvalidRequest,
