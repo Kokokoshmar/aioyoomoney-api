@@ -16,23 +16,31 @@ class Operation:
     amount: float | None = field(default=None)
     label: str | None = field(default=None)
     type: OperationType | None = field(default=None)
+    kwargs: dict = field(default_factory=dict)
 
     @classmethod
     def serialize_from_dict(cls, data: dict) -> "Operation":
         operation = cls()
 
         valid_keys = [_field.name for _field in fields(operation)]  # не нравится
-
         for key, value in data.items():
             if key in valid_keys:
                 operation.__setattr__(key, value)
+            else:
+                operation.kwargs[key] = value
 
         return operation
+
+    def __getitem__(self, item: str):
+        return self.kwargs.get(item)
 
 
 @dataclass
 class OperationDetails(Operation):
     details: str | None = field(default=None)
+    codepro: bool | None = field(default=None)
+    comment: str | None = field(default=None)
+    message: str | None = field(default=None)
 
 
 @dataclass
@@ -47,9 +55,6 @@ class OperationDetailsIncomingTransfer(OperationDetails):
 class OperationDetailsOutgoingTransfer(OperationDetails):
     recipient: str | None = field(default=None)
     recipient_type: RecipientType | None = field(default=None)
-    codepro: bool | None = field(default=None)
-    comment: str | None = field(default=None)
-    message: str | None = field(default=None)
     amount_due: int | None = field(default=None)
     fee: int | None = field(default=None)
 

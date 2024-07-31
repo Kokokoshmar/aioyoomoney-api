@@ -49,7 +49,7 @@ class Quickpay(ContextSession):
 
         super().__init__(self.base_url, "POST")
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "Quickpay":
         response = await super().__aenter__()
         self.redirected_url = response.url
 

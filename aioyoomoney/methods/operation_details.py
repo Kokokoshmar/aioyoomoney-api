@@ -1,3 +1,5 @@
+from dateutil.parser import parse as dateutil_parse
+
 from aioyoomoney.base.context_method import ContextMethod
 from aioyoomoney.data_classes.operation import *
 from aioyoomoney.enums.operation import OperationType
@@ -21,13 +23,14 @@ class OperationDetailsMethod(ContextMethod):
     async def __aenter__(self) -> OPERATIONS_TYPE:
         data = await super().__aenter__()
 
-        raise_error(data["error"])
+        if "error" in data:
+            raise_error(data["error"])
 
         return self.get_operation_from_dict(data)
 
     @staticmethod
     def get_operation_from_dict(data: dict, details=True) -> OPERATIONS_TYPE:
-        datetime = dt.strptime(data.get("datetime", ""), '%Y-%m-%dT%H:%M:%S.%f%z')
+        datetime = dateutil_parse(data.get("datetime", ""))
 
         data["datetime"] = datetime
 

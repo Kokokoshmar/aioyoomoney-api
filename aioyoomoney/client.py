@@ -3,6 +3,7 @@ from datetime import datetime
 from aioyoomoney.methods import *
 from .data_classes import *
 from .enums import *
+from .methods.operation_details import OPERATIONS_TYPE
 
 
 class Client:
@@ -20,7 +21,7 @@ class Client:
                                 till_date: datetime = None,
                                 start_record: str = None,
                                 records: int = None,
-                                details: bool = None):
+                                details: bool = None) -> History:
         async with HistoryMethod(
                 token=self.token,
                 type=type,
@@ -33,10 +34,10 @@ class Client:
         ) as history:
             return history
 
-    # def operation_details(self, operation_id: str):
-    #     method = "operation-details"
-    #     return OperationDetails(base_url=self.base_url,
-    #                             token=self.token,
-    #                             method=method,
-    #                             operation_id=operation_id,
-    #                             )
+    async def operation_details(self, operation_id: str) -> OPERATIONS_TYPE:
+        async with OperationDetailsMethod(
+                token=self.token,
+                operation_id=operation_id,
+        ) as operation_details:
+            return operation_details
+
