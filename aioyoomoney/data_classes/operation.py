@@ -32,7 +32,10 @@ class Operation:
         return operation
 
     def __getitem__(self, item: str):
-        return self.kwargs.get(item)
+        if item in self.kwargs.keys():
+            return self.kwargs.get(item)
+
+        return self.__getattribute__(item)
 
 
 @dataclass

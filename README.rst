@@ -1,5 +1,6 @@
-API Yoomoney - unofficial python library
+API Yoomoney (async) - unofficial python library
 ==================================================
+`This repository <https://github.com/AlekseyKorshuk/yoomoney-api>`_ was taken as a basis.
 
 This is an unofficial `YooMoney <https://yoomoney.ru>`_ API python library.
 
@@ -51,15 +52,15 @@ You can install with:
 
 .. code:: shell
 
-        pip install yoomoney --upgrade
+        pip install aioyoomoney
 
 
 You can install from source with:
 
 .. code:: shell
 
-    git clone https://github.com/AlekseyKorshuk/yoomoney-api --recursive
-    cd yoomoney-api
+    git clone https://github.com/Kokokoshmar/aioyoomoney-api
+    cd aioyoomoney-api
     python setup.py install
 
 ===========
@@ -71,8 +72,6 @@ Access token
 
 First of all we need to receive an access token.
 
-.. image:: token.gif
-
 1. Log in to your YooMoney wallet with your username. If you do not have a wallet, `create it <https://yoomoney.ru/reg>`_.
 2. Go to the `App registration <https://yoomoney.ru/myservices/new>`_ page.
 3. Set the application parameters. Save CLIENT_ID and YOUR_REDIRECT_URI for net steps
@@ -82,20 +81,22 @@ First of all we need to receive an access token.
 
 .. code:: python
 
-    from yoomoney import Authorize
+    from aioyoomoney import authorize
 
-    Authorize(
-          client_id="YOUR_CLIENT_ID",
-          redirect_uri="YOUR_REDIRECT_URI",
-          client_secret="YOUR_CLIENT_SECRET",
-          scope=["account-info",
-                 "operation-history",
-                 "operation-details",
-                 "incoming-transfers",
-                 "payment-p2p",
-                 "payment-shop",
-                 ]
-          )
+    token = authorize(
+        client_id=CLIENT_ID,
+        redirect_uri=REDIRECT_URI,
+        client_secret=CLIENT_SECRET,
+        scope=[
+            "account-info",
+            "operation-history",
+            "operation-details",
+            "incoming-transfers",
+            "payment-p2p",
+        ]
+    )
+
+    print(token)
 
 You are done with the most difficult part!
 
@@ -106,51 +107,26 @@ Paste YOUR_TOKEN and run this code:
 
 .. code:: python
 
-      from yoomoney import Client
+    import asyncio
 
-      token = "YOUR_TOKEN"
+    from aioyoomoney import Client
 
-      client = Client(token)
 
-      user = client.account_info()
+    async def client_info():
+        client = Client(YOUR_TOKEN)
 
-      print("Account number:", user.account)
-      print("Account balance:", user.balance)
-      print("Account currency code in ISO 4217 format:", user.currency)
-      print("Account status:", user.account_status)
-      print("Account type:", user.account_type)
+        account = await client.account_info()
 
-      print("Extended balance information:")
-      for pair in vars(user.balance_details):
-          print("\t-->", pair, ":", vars(user.balance_details).get(pair))
+        print(f"Account: {account.id}")
+        print(f"Balance: {account.balance}")
+        print(f"Currency: {account.currency}")
+        print(f"Account Status: {account.account_status}")
+        print(f"Account Type: {account.account_type}")
+        print(f"Balance Details: {account.balance_details}")
+        print(f"Cards Linked: {account.cards_linked}")
 
-      print("Information about linked bank cards:")
-      cards = user.cards_linked
 
-      if len(cards) != 0:
-          for card in cards:
-              print(card.pan_fragment, " - ", card.type)
-      else:
-          print("No card is linked to the account")
-
-Output:
-*******
-.. code:: python
-
-      Account number: 410019014512803
-      Account balance: 999999999999.99
-      Account currency code in ISO 4217 format: 643
-      Account status: identified
-      Account type: personal
-      Extended balance information:
-         --> total : 999999999999.99
-         --> available : 999999999999.99
-         --> deposition_pending : None
-         --> blocked : None
-         --> debt : None
-         --> hold : None
-      Information about linked bank cards:
-      No card is linked to the account
+    asyncio.run(client_info())
 
 
 Operation history
@@ -160,105 +136,56 @@ Paste YOUR_TOKEN and run this code:
 
 .. code:: python
 
-      from yoomoney import Client
+    import asyncio
 
-      token = "YOUR_TOKEN"
+    from aioyoomoney import Client
+    from dataclasses import fields
 
-      client = Client(token)
 
-      history = client.operation_history()
+    async def get_operation_history():
+        client = Client(YOUR_TOKEN)
 
-      print("List of operations:")
-      print("Next page starts with: ", history.next_record)
+        history = await client.operation_history()
+        print("Next record:", history.next_record)
+        for operation in history.operations:
+            for field in fields(operation):
+                if field.name != "kwargs":
+                    print(field.name, '->', operation[field.name])
 
-      for operation in history.operations:
-          print()
-          print("Operation:",operation.operation_id)
-          print("\tStatus     -->", operation.status)
-          print("\tDatetime   -->", operation.datetime)
-          print("\tTitle      -->", operation.title)
-          print("\tPattern id -->", operation.pattern_id)
-          print("\tDirection  -->", operation.direction)
-          print("\tAmount     -->", operation.amount)
-          print("\tLabel      -->", operation.label)
-          print("\tType       -->", operation.type)
+            for key, value in operation.kwargs.items():
+                print(key, '->', value)
 
-Output:
-*******
-.. code:: python
+            print("================================")
 
-      List of operations:
-      Next page starts with:  None
 
-      Operation: 670278348725002105
-        Status     --> success
-        Datetime   --> 2021-10-10 10:10:10
-        Title      --> Пополнение с карты ****4487
-        Pattern id --> None
-        Direction  --> in
-        Amount     --> 100500.0
-        Label      --> 3784030974
-        Type       --> deposition
-
-      Operation: 670244335488002313
-        Status     --> success
-        Datetime   --> 2021-10-10 10:10:10
-        Title      --> Перевод от 410019014512803
-        Pattern id --> p2p
-        Direction  --> in
-        Amount     --> 100500.0
-        Label      --> 7920963969
-        Type       --> incoming-transfer
+    asyncio.run(get_operation_history())
 
 
 Operation details
 *****************
 
-Paste YOUR_TOKEN with an OPERATION_ID (example: 670244335488002312) from previous example output and run this code:
+Paste YOUR_TOKEN with an OPERATION_ID (example: 670244335488002312):
 
 .. code:: python
+    import asyncio
 
-      from yoomoney import Client
+    from aioyoomoney import Client
+    from dataclasses import fields
 
-      token = "YOUR_TOKEN"
 
-      client = Client(token)
+    async def get_operation_details():
+        client = Client(YOUR_TOKEN)
 
-      details = client.operation_details(operation_id="OPERATION_ID")
+        operation = await client.operation_details(OPERATION_ID)
+        for field in fields(operation):
+            if field.name != "kwargs":
+                print(field.name, '->', operation[field.name])
 
-      properties = [i for i in details.__dict__.keys() if i[:1] != '_']
+        for key, value in operation.kwargs.items():
+            print(key, '->', value)
 
-      max_size = len(max(properties, key=len))
 
-      for prop in properties:
-          print(prop, " " * (max_size - len(prop)), "-->", str(details.__getattribute__(prop)).replace('\n', ' '))
-
-Output:
-*******
-.. code:: python
-
-      operation_id     --> 670244335488002312
-      status           --> success
-      pattern_id       --> p2p
-      direction        --> in
-      amount           --> 100500.0
-      amount_due       --> None
-      fee              --> None
-      datetime         --> 2021-10-10 10:10:10
-      title            --> Перевод от 410019014512803
-      sender           --> 410019014512803
-      recipient        --> None
-      recipient_type   --> None
-      message          --> Justtext
-      comment          --> None
-      codepro          --> False
-      protection_code  --> None
-      expires          --> None
-      answer_datetime  --> None
-      label            --> 7920963969
-      details          --> Justtext
-      type             --> incoming-transfer
-      digital_goods    --> None
+    asyncio.run(get_operation_details())
 
 
 Quickpay forms
@@ -267,23 +194,24 @@ Quickpay forms
 Run this code:
 
 .. code:: python
+    import asyncio
 
-      from yoomoney import Quickpay
+    from aioyoomoney import Quickpay
 
-      quickpay = Quickpay(
-                  receiver="410019014512803",
-                  quickpay_form="shop",
-                  targets="Sponsor this project",
-                  paymentType="SB",
-                  sum=150,
-                  )
 
-      print(quickpay.base_url)
-      print(quickpay.redirected_url)
+    async def quickpay():
+        async with Quickpay(
+            receiver="899999999999999",
+            quickpay_form="shop",
+            targets="Sponsor this project",
+            payment_type="SB",
+            sum=10,
+            form_comment='test',
+            label="label"
+        ) as quickpay:
+            print(quickpay.redirected_url)
+            print(quickpay.base_url)
+            print(quickpay.payload)
 
-Output:
-*******
-.. code:: python
 
-      https://yoomoney.ru/quickpay/confirm.xml?receiver=410019014512803&quickpay-form=shop&targets=Sponsor%20this%20project&paymentType=SB&sum=150
-      https://yoomoney.ru/transfer/quickpay?requestId=343532353937313933395f66326561316639656131626539326632616434376662373665613831373636393537613336383639
+    asyncio.run(quickpay())
