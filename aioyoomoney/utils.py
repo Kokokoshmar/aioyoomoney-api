@@ -8,7 +8,7 @@ def raise_error(error_code: str) -> None:
     if error_code in ERROR_CODES:
         raise ERROR_CODES[error_code]()
     else:
-        raise TechnicalError()
+        raise TechnicalError(error_code)
 
 
 def convert_datetime_to_str(date: datetime) -> str | None:

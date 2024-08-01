@@ -21,7 +21,7 @@ class HistoryMethod(ContextMethod):
             till_date: datetime = None,
             start_record: str = None,
             records: int = None,
-            details: bool = False
+            details: bool = None
     ):
         self.details = details
 
@@ -42,7 +42,7 @@ class HistoryMethod(ContextMethod):
             "till": till_date,
             "start_record": start_record,
             "records": records,
-            "details": details
+            "details": str(details).lower()
         }
 
         payload = {k: v for k, v in payload.items() if v is not None}

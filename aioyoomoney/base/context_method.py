@@ -1,6 +1,7 @@
 from os.path import join
 
 from .context_session import ContextSession
+from ..exceptions import InvalidToken
 from ..globals import API_URL
 
 
@@ -21,5 +22,9 @@ class ContextMethod(ContextSession):
 
     async def __aenter__(self) -> dict:
         response = await super().__aenter__()
+        response_json = await response.json()
 
-        return await response.json()
+        if not response_json:
+            raise InvalidToken()
+
+        return response_json

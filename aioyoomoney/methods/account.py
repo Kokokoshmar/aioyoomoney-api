@@ -10,9 +10,6 @@ class AccountMethod(ContextMethod):
     async def __aenter__(self) -> Account:
         data = await super().__aenter__()
 
-        if len(data) == 0:
-            raise InvalidToken()
-
         return self._get_account_object(data)
 
     @staticmethod

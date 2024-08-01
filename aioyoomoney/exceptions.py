@@ -1,89 +1,93 @@
-
-
 class YooMoneyError(Exception):
     """Basic class"""
 
 
-class InvalidToken(YooMoneyError):
+class IllegalParamError(YooMoneyError):
+    message = "Invalid parameter value {}"
 
-    message = "Token is not valid, or does not have the appropriate rights"
+
+class IllegalParamType(IllegalParamError):
     def __init__(self, ):
-        super().__init__(self.message)
+        super().__init__(self.message.format("type"))
 
 
-class IllegalParamType(YooMoneyError):
-
-    message = "Invalid parameter value 'type'"
+class IllegalParamStartRecord(IllegalParamError):
     def __init__(self, ):
-        super().__init__(self.message)
+        super().__init__(self.message.format("start_record"))
 
-class IllegalParamStartRecord(YooMoneyError):
 
-    message = "Invalid parameter value 'start_record'"
+class IllegalParamRecords(IllegalParamError):
     def __init__(self, ):
-        super().__init__(self.message)
+        super().__init__(self.message.format("records"))
 
 
-class IllegalParamRecords(YooMoneyError):
-
-    message = "Invalid parameter value 'records'"
+class IllegalParamLabel(IllegalParamError):
     def __init__(self, ):
-        super().__init__(self.message)
+        super().__init__(self.message.format("label"))
 
-class IllegalParamLabel(YooMoneyError):
 
-    message = "Invalid parameter value 'label'"
+class IllegalParamFromDate(IllegalParamError):
     def __init__(self, ):
-        super().__init__(self.message)
-
-class IllegalParamFromDate(YooMoneyError):
-
-    message = "Invalid parameter value 'from_date'"
-    def __init__(self, ):
-        super().__init__(self.message)
+        super().__init__(self.message.format("from_date"))
 
 
-class IllegalParamTillDate(YooMoneyError):
-
+class IllegalParamTillDate(IllegalParamError):
     message = "Invalid parameter value 'till_date'"
-    def __init__(self, ):
-        super().__init__(self.message)
 
-class IllegalParamOperationId(YooMoneyError):
-
-    message = "Invalid parameter value 'operation_id'"
     def __init__(self, ):
-        super().__init__(self.message)
+        super().__init__(self.message.format("till_date"))
+
+
+class IllegalParamOperationId(IllegalParamError):
+    def __init__(self, ):
+        super().__init__(self.message.format("operation_id"))
+
+
+class IllegalParamDetails(IllegalParamError):
+    def __init__(self):
+        super().__init__(self.message.format('details'))
+
 
 class TechnicalError(YooMoneyError):
+    message = "Technical error, try calling the operation again later. Error code - {error_code}"
 
-    message = "Technical error, try calling the operation again later"
-    def __init__(self, ):
-        super().__init__(self.message)
+    def __init__(self, error_code: str):
+        super().__init__(self.message.format(error_code=error_code))
+
 
 class InvalidRequest(YooMoneyError):
-
     message = "Required query parameters are missing or have incorrect or invalid values"
+
     def __init__(self, ):
         super().__init__(self.message)
+
 
 class UnauthorizedClient(YooMoneyError):
-
     message = "Invalid parameter value 'client_id' or 'client_secret', or the application" \
               " does not have the right to request authorization (for example, YooMoney blocked it 'client_id')"
+
     def __init__(self, ):
         super().__init__(self.message)
 
-class InvalidGrant(YooMoneyError):
 
+class InvalidGrant(YooMoneyError):
     message = "In issue 'access_token' denied. YuMoney did not issue a temporary token, " \
               "the token is expired, or this temporary token has already been issued " \
               "'access_token' (repeated request for an authorization token with the same temporary token)"
+
     def __init__(self, ):
         super().__init__(self.message)
 
-class EmptyToken(YooMoneyError):
 
+class EmptyToken(YooMoneyError):
     message = "Response token is empty. Repeated request for an authorization token"
+
+    def __init__(self, ):
+        super().__init__(self.message)
+
+
+class InvalidToken(YooMoneyError):
+    message = "Token is not valid, or does not have the appropriate rights"
+
     def __init__(self, ):
         super().__init__(self.message)
