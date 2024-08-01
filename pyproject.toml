@@ -17,9 +17,9 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-  "aiohttp"
+    "aiohttp",
+    "dateutil"
 ]
 
 [project.urls]
-GitHub = "https://github.com/KtotoNekt/aioyoomoney-api"
-CodeBerg = "https://codeberg.org/Ktoto/aioyoomoney-api"
+GitHub = "https://github.com/Kokokoshmar/aioyoomoney-api"
