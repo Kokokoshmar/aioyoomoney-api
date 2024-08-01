@@ -1,12 +1,10 @@
- # API Yoomoney (async) - unofficial python library
-
----
-
-[This repository](https://github.com/AlekseyKorshuk/yoomoney-api) was
-taken as a basis.
+# API Yoomoney (async) - unofficial python library
 
 This is an unofficial [YooMoney](https://yoomoney.ru) API python
 library.
+
+[This repository](https://github.com/AlekseyKorshuk/yoomoney-api) was
+taken as a basis.
 
 # Introduction
 
@@ -19,15 +17,15 @@ Features
 
 Implemented methods:
 
--   [[#Access token]] - Getting an access token
+-   [Access token](#access-token) - Getting an access token
 -   Account information - Getting information about the status of the
     user account.
--   [[#Operation history]] - This method allows viewing the full or partial
+-   [Operation history](#operation-history) - This method allows viewing the full or partial
     history of operations in page mode. History records are displayed in
     reverse chronological order (from most recent to oldest).
--   [[#Operation details]] - Provides detailed information about a
+-   [Operation details](#operation-details) - Provides detailed information about a
     particular operation from the history.
--   [[#Quickpay forms]] - The YooMoney form is a set of fields with
+-   [Quickpay forms](#quickpay-forms) - The YooMoney form is a set of fields with
     information about a transfer. You can embed payment form into your
     interface (for instance, a website or blog). When the sender pushes
     the button, the details from the form are sent to YooMoney and an
