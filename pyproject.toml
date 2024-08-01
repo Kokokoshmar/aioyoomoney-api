@@ -9,7 +9,7 @@ authors = [
   { name="Ktoto" },
 ]
 description = "Async Yoomoney API"
-readme = "README.md"
+readme = "README.rst"
 requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Python :: 3",

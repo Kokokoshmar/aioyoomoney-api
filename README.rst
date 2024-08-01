@@ -52,7 +52,7 @@ You can install with:
 
 .. code:: shell
 
-        pip install aioyoomoney
+    pip install aioyoomoney-api
 
 
 You can install from source with:
