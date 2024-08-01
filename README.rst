@@ -61,7 +61,7 @@ You can install from source with:
 
     git clone https://github.com/Kokokoshmar/aioyoomoney-api
     cd aioyoomoney-api
-    python setup.py install
+    pip install .
 
 ===========
 Quick start

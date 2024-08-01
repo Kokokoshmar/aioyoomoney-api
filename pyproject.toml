@@ -18,7 +18,7 @@ classifiers = [
 ]
 dependencies = [
     "aiohttp",
-    "dateutil"
+    "python-dateutil"
 ]
 
 [project.urls]
